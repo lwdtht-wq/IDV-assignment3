@@ -24,7 +24,7 @@
   .swatch{display:inline-block;width:.7em;height:.7em;border-radius:2px;margin-right:.4em}
   .guide{stroke:#94a3b8;stroke-dasharray:4 6;stroke-width:1.2}
 
-  /* tooltip (for charts 4 & 11) */
+  /* tooltip (for charts 4, 8 & 11) */
   .tooltip{
     position:fixed;pointer-events:none;background:#111;color:#fff;
     padding:8px 10px;border-radius:10px;font-size:12px;line-height:1.25;
@@ -65,6 +65,12 @@
   .label-halo{paint-order:stroke fill; stroke:#fff; stroke-width:3;}
   .hint{font-size:12px;fill:#64748b}
   .note{font-size:12px;color:#64748b;margin-top:6px}
+
+  /* chart 11 (function) — 确保曲线不被填充，仅描边 */
+  .curve{ fill:none; stroke-width:3; }
+  .shade{ fill:#9ca3af; fill-opacity:.45; }
+  .vline{ stroke:#111; stroke-dasharray:6 6; stroke-width:2; }
+  .handle{ fill:#111; }
 </style>
 
 <body>
@@ -164,59 +170,23 @@
     }
 
     const series = [
-      {
-        key: "Set model", color: "#67c79e",
-        data: buildSeries([
-          [1984,1986,1987,1.2],
-          [1993,1995,1996,0.9],
-          [1998,1999,2000,0.8],
-          [2003,2004,2005,1.6],
-          [2005,2006,2007,1.0],
-          [2007,2008,2009,0.9],
-          [2009,2010,2011,0.7],
-          [2013,2014,2015,0.9]
-        ])
-      },
-      {
-        key: "Sequence model", color: "#d19a4c",
-        data: buildSeries([
-          [1988,1989,1990,1.0],
-          [1991,1992,1993,0.9],
-          [1994,1996,1997,1.1],
-          [1999,2000,2001,0.9],
-          [2004,2006,2007,2.0],
-          [2006,2008,2009,1.7],
-          [2009,2010,2011,1.3],
-          [2014,2016,2017,1.2],
-          [2018,2019,2020,1.0]
-        ])
-      },
-      {
-        key: "Vector model", color: "#9a8cff",
-        data: buildSeries([
-          [1986,1988,1989,0.8],
-          [1998,1999,2000,0.8],
-          [2002,2004,2006,3.2],
-          [2006,2007,2008,2.0],
-          [2008,2009,2010,1.6],
-          [2009,2011,2012,1.6],
-          [2012,2014,2016,4.0],
-          [2016,2017,2018,3.4]
-        ])
-      },
-      {
-        key: "End-to-end", color: "#e869a7",
-        data: buildSeries([
-          [1994,1996,1997,1.6],
-          [1996,1998,1999,1.2],
-          [2007,2008,2009,1.0],
-          [2009,2011,2012,2.2],
-          [2011,2013,2014,3.1],
-          [2013,2015,2016,4.0],
-          [2017,2019,2020,9.2],
-          [2019,2020,2021,3.0]
-        ])
-      }
+      { key:"Set model", color:"#67c79e", data:buildSeries([
+        [1984,1986,1987,1.2],[1993,1995,1996,0.9],[1998,1999,2000,0.8],
+        [2003,2004,2005,1.6],[2005,2006,2007,1.0],[2007,2008,2009,0.9],
+        [2009,2010,2011,0.7],[2013,2014,2015,0.9]
+      ])},
+      { key:"Sequence model", color:"#d19a4c", data:buildSeries([
+        [1988,1989,1990,1.0],[1991,1992,1993,0.9],[1994,1996,1997,1.1],[1999,2000,2001,0.9],
+        [2004,2006,2007,2.0],[2006,2008,2009,1.7],[2009,2010,2011,1.3],[2014,2016,2017,1.2],[2018,2019,2020,1.0]
+      ])},
+      { key:"Vector model", color:"#9a8cff", data:buildSeries([
+        [1986,1988,1989,0.8],[1998,1999,2000,0.8],[2002,2004,2006,3.2],
+        [2006,2007,2008,2.0],[2008,2009,2010,1.6],[2009,2011,2012,1.6],[2012,2014,2016,4.0],[2016,2017,2018,3.4]
+      ])},
+      { key:"End-to-end", color:"#e869a7", data:buildSeries([
+        [1994,1996,1997,1.6],[1996,1998,1999,1.2],[2007,2008,2009,1.0],
+        [2009,2011,2012,2.2],[2011,2013,2014,3.1],[2013,2015,2016,4.0],[2017,2019,2020,9.2],[2019,2020,2021,3.0]
+      ])}
     ];
 
     series.forEach(s => s.data.forEach(p => { p.value = Math.min(Y_CAP, p.value); }));
@@ -229,7 +199,7 @@
 
     const clipId = "reveal-" + Math.random().toString(36).slice(2);
     svg.append("defs").append("clipPath").attr("id", clipId)
-      .append("rect").attr("x",M.l).attr("y",M.t).attr("width",0).attr("height",h);
+       .append("rect").attr("x",M.l).attr("y",M.t).attr("width",0).attr("height",h);
 
     const serG = g.append("g").attr("clip-path",`url(#${clipId})`);
 
@@ -254,46 +224,35 @@
       .on("mouseenter",(e,d)=>paths.classed("dim", p=>p.key!==d.key))
       .on("mouseleave",()=>paths.classed("dim", false));
 
-    items.append("rect").attr("width",12).attr("height",12).attr("rx",2).attr("ry",2)
-      .attr("fill",d=>d.color);
+    items.append("rect").attr("width",12).attr("height",12).attr("rx",2).attr("ry",2).attr("fill",d=>d.color);
     items.append("text").attr("x",16).attr("y",10).text(d=>d.key);
 
     const tip = d3.select("#tip4");
     const guide = g.append("line").attr("class","guide").attr("y1",0).attr("y2",h).style("opacity",0);
 
-    g.append("rect")
-      .attr("x",0).attr("y",0).attr("width",w).attr("height",h)
-      .attr("fill","transparent")
+    g.append("rect").attr("x",0).attr("y",0).attr("width",w).attr("height",h).attr("fill","transparent")
       .on("mousemove", function(event){
         const [mx] = d3.pointer(event, this);
         const yr = Math.round(x.invert(mx));
         guide.attr("x1",x(yr)).attr("x2",x(yr)).style("opacity",1);
 
-        const rows = series
-          .filter(s=>!s.hidden)
-          .map(s=>{
-            const idx = Math.min(Math.max(yr - years[0],0), years.length-1);
-            return {key:s.key, color:s.color, v:s.data[idx].value};
-          });
+        const rows = series.filter(s=>!s.hidden).map(s=>{
+          const idx = Math.min(Math.max(yr - years[0],0), years.length-1);
+          return {key:s.key, color:s.color, v:s.data[idx].value};
+        });
 
         const html = `<div style="margin-bottom:4px">${yr}</div>` +
           rows.map(r=>`<div><span class="swatch" style="background:${r.color}"></span>${r.key}: ${r.v.toFixed(1)}</div>`).join("");
-        tip.html(html)
-          .style("left", (event.clientX)+"px")
-          .style("top",(event.clientY)+"px")
-          .style("opacity",1);
+        tip.html(html).style("left",(event.clientX)+"px").style("top",(event.clientY)+"px").style("opacity",1);
       })
-      .on("mouseleave", ()=>{
-        guide.style("opacity",0);
-        tip.style("opacity",0);
-      });
+      .on("mouseleave", ()=>{ guide.style("opacity",0); tip.style("opacity",0); });
 
     svg.select(`#${clipId} rect`).transition().duration(1200).attr("width", w);
   })();
 
   /* -------------------- Chart 9 -------------------- */
   (function chart9(){
-    const SVG_URL = '11.svg'; // 放同目录
+    const SVG_URL = '11.svg';
     init();
     async function init(){
       const stage = document.getElementById('stage9');
@@ -307,10 +266,7 @@
       }catch(e){
         stage.innerHTML = `<object id="sketchObj9" type="image/svg+xml" data="${SVG_URL}" style="width:100%;height:auto;display:block;background:#fff"></object>`;
         const obj = document.getElementById('sketchObj9');
-        obj.addEventListener('load', ()=>{
-          const svg = obj.contentDocument && obj.contentDocument.querySelector('svg');
-          if(svg) setup(svg);
-        });
+        obj.addEventListener('load', ()=>{ const svg = obj.contentDocument && obj.contentDocument.querySelector('svg'); if(svg) setup(svg); });
       }
     }
     function setup(svg){
@@ -327,11 +283,10 @@
 
       if(hand){ enableHandWave(hand); }
       else{
-        svg.addEventListener('click', oneTimePickAsHand, {once:true});
-        function oneTimePickAsHand(ev){
+        svg.addEventListener('click', function oneTimePick(ev){
           const g = ev.target.closest('g');
           if(g){ hand = g; enableHandWave(hand); triggerWave(hand); }
-        }
+        }, {once:true});
       }
 
       document.getElementById('replay9').onclick = ()=>{ const stage = document.getElementById('stage9'); stage.classList.remove('enter'); void stage.offsetWidth; stage.classList.add('enter'); };
@@ -361,15 +316,10 @@
       node.style.transformOrigin = origin;
       node.style.transformBox = 'fill-box';
     }
-    function enableHandWave(hand){
-      hand.style.cursor='pointer';
-      hand.addEventListener('click', ()=> triggerWave(hand));
-    }
+    function enableHandWave(hand){ hand.style.cursor='pointer'; hand.addEventListener('click', ()=> triggerWave(hand)); }
     function triggerWave(hand){
-      hand.classList.remove('hand-wave');
-      void hand.offsetWidth;
-      hand.style.transformOrigin = 'top center';
-      hand.style.transformBox = 'fill-box';
+      hand.classList.remove('hand-wave'); void hand.offsetWidth;
+      hand.style.transformOrigin = 'top center'; hand.style.transformBox = 'fill-box';
       hand.classList.add('hand-wave');
     }
   })();
@@ -396,82 +346,47 @@
       .call(d3.axisLeft(y).tickSize(-w).ticks(5))
       .selectAll('.tick text').remove();
 
-    g.append('g').attr('class','axis x').attr('transform',`translate(0,${h})`)
-      .call(d3.axisBottom(x));
-    g.append('g').attr('class','axis y')
-      .call(d3.axisLeft(y).ticks(5));
+    g.append('g').attr('class','axis x').attr('transform',`translate(0,${h})`).call(d3.axisBottom(x));
+    g.append('g').attr('class','axis y').call(d3.axisLeft(y).ticks(5));
 
     g.append('rect').attr('class','frame').attr('x',0).attr('y',0).attr('width',w).attr('height',h);
 
-    g.append('text')
-      .attr('class','title')
-      .attr('x', w/2).attr('y', -18)
-      .attr('text-anchor','middle')
+    g.append('text').attr('class','title').attr('x', w/2).attr('y', -18).attr('text-anchor','middle')
       .text('Cross Validation Accuracy (%)');
 
-    const groups = g.selectAll('.g')
-      .data(data)
-      .enter().append('g')
-      .attr('class','g')
-      .attr('transform', d => `translate(${x(d.cat)},0)`)
+    const groups = g.selectAll('.g').data(data).enter().append('g')
+      .attr('class','g').attr('transform', d => `translate(${x(d.cat)},0)`)
       .on('mouseenter', function(e,d){
         d3.select(this).selectAll('.bar,.ghost').attr('opacity',1);
-        tip.style('opacity',1)
-           .html(`<div style="margin-bottom:4px"><b>${d.cat}</b></div>
-                  <div>Ours: ${d.ours}%</div>
-                  <div>Baseline: ${d.base}%</div>`);
+        tip.style('opacity',1).html(
+          `<div style="margin-bottom:4px"><b>${d.cat}</b></div>
+           <div>Ours: ${d.ours}%</div><div>Baseline: ${d.base}%</div>`);
       })
-      .on('mousemove', function(e){
-        tip.style('left', (e.clientX)+'px').style('top', (e.clientY)+'px');
-      })
-      .on('mouseleave', function(){
-        tip.style('opacity',0);
-      });
+      .on('mousemove', e => tip.style('left', (e.clientX)+'px').style('top', (e.clientY)+'px'))
+      .on('mouseleave', ()=> tip.style('opacity',0));
 
     const barW   = x.bandwidth()*0.36;
     const ghostW = x.bandwidth()*0.30;
-
     const tip = d3.select('#tip8');
 
-    groups.append('rect')
-      .attr('class','bar')
-      .attr('x', x.bandwidth()*0.12)
-      .attr('width', barW)
-      .attr('y', y(0))
-      .attr('height', 0)
+    groups.append('rect').attr('class','bar').attr('x', x.bandwidth()*0.12).attr('width', barW)
+      .attr('y', y(0)).attr('height', 0)
       .transition().duration(900).ease(d3.easeCubicOut)
-      .attr('y', d => y(d.ours))
-      .attr('height', d => y(0) - y(d.ours));
+      .attr('y', d => y(d.ours)).attr('height', d => y(0) - y(d.ours));
 
-    const ghosts = groups.append('rect')
-      .attr('class','ghost')
-      .attr('x', x.bandwidth()*(0.56))
-      .attr('width', ghostW)
-      .attr('y', y(0))
-      .attr('height', 0)
-      .attr('rx',4).attr('ry',4);
+    const ghosts = groups.append('rect').attr('class','ghost').attr('x', x.bandwidth()*0.56)
+      .attr('width', ghostW).attr('y', y(0)).attr('height', 0).attr('rx',4).attr('ry',4);
 
     ghosts.transition().delay(150).duration(900).ease(d3.easeCubicOut)
-      .attr('y', d => y(d.base))
-      .attr('height', d => y(0) - y(d.base));
+      .attr('y', d => y(d.base)).attr('height', d => y(0) - y(d.base));
 
-    groups.append('text')
-      .attr('class','value')
-      .attr('x', x.bandwidth()*0.12 + barW/2)
-      .attr('y', d=> y(d.ours) - 8)
-      .attr('text-anchor','middle')
-      .style('opacity',0)
-      .text(d=>d.ours.toFixed(1))
-      .transition().delay(700).duration(400).style('opacity',1);
+    groups.append('text').attr('class','value')
+      .attr('x', x.bandwidth()*0.12 + barW/2).attr('y', d=> y(d.ours) - 8).attr('text-anchor','middle')
+      .style('opacity',0).text(d=>d.ours.toFixed(1)).transition().delay(700).duration(400).style('opacity',1);
 
-    groups.append('text')
-      .attr('class','value')
-      .attr('x', x.bandwidth()*0.56 + ghostW/2)
-      .attr('y', d=> y(d.base) - 8)
-      .attr('text-anchor','middle')
-      .style('opacity',0.85)
-      .style('fill','#3b3b3b')
-      .text(d=>d.base.toFixed(1))
+    groups.append('text').attr('class','value')
+      .attr('x', x.bandwidth()*0.56 + ghostW/2).attr('y', d=> y(d.base) - 8).attr('text-anchor','middle')
+      .style('opacity',0.85).style('fill','#3b3b3b').text(d=>d.base.toFixed(1))
       .transition().delay(750).duration(400).style('opacity',1);
 
     document.getElementById('toggleGhost8').addEventListener('change', e => {
@@ -492,31 +407,21 @@
 
     const x = d3.scaleLinear().domain([-2, 5]).range([0, w]);
     const y = d3.scaleLinear().domain([0, 0.30]).nice().range([h, 0]);
-
     const xTicks = [-2,-1,0,1,2,3,4,5];
 
-    g.append('g').attr('class','grid')
-      .call(d3.axisLeft(y).tickSize(-w).ticks(6))
-      .selectAll('text').remove();
+    g.append('g').attr('class','grid').call(d3.axisLeft(y).tickSize(-w).ticks(6)).selectAll('text').remove();
 
-    g.append('g').attr('class','grid')
-      .attr('transform',`translate(0,${h})`)
+    g.append('g').attr('class','grid').attr('transform',`translate(0,${h})`)
       .call(d3.axisBottom(x).tickValues(xTicks).tickSize(-h).tickFormat(()=>''))  
       .selectAll('.tick line').attr('stroke','#e5e7eb');
 
-    g.append('g').attr('class','axis')
-      .attr('transform',`translate(0,${h})`)
+    g.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
       .call(d3.axisBottom(x).tickValues(xTicks).tickFormat(d3.format('d')));
 
-    g.append('g').attr('class','axis')
-      .call(d3.axisLeft(y).ticks(6));
+    g.append('g').attr('class','axis').call(d3.axisLeft(y).ticks(6));
 
-    g.append('text').attr('x',-50).attr('y',-12)
-      .attr('text-anchor','start').style('font-size','16px')
-      .text('Probability Density');
-    g.append('text').attr('x',w-6).attr('y',h+36)
-      .attr('text-anchor','end').style('font-size','16px')
-      .text('x');
+    g.append('text').attr('x',-50).attr('y',-12).attr('text-anchor','start').style('font-size','16px').text('Probability Density');
+    g.append('text').attr('x',w-6).attr('y',h+36).attr('text-anchor','end').style('font-size','16px').text('x');
 
     const mu0 = 0.15,  s0 = 0.75;
     const mu1 = 2.00,  s1 = 0.65;
@@ -534,24 +439,22 @@
     const y1 = xs.map(v => k1*pdf(v,mu1,s1));
 
     const line = d3.line().x(d=>x(d[0])).y(d=>y(d[1])).curve(d3.curveMonotoneX);
-    const path0 = g.append('path').attr('class','curve y0').attr('d', line(xs.map((v,i)=>[v, y0[i]]))).attr('stroke','#eab308');
-    const path1 = g.append('path').attr('class','curve y1').attr('d', line(xs.map((v,i)=>[v, y1[i]]))).attr('stroke','#0ea5a4');
+    const path0 = g.append('path').attr('class','curve y0').attr('fill','none')
+      .attr('d', line(xs.map((v,i)=>[v, y0[i]]))).attr('stroke','#eab308');
+    const path1 = g.append('path').attr('class','curve y1').attr('fill','none')
+      .attr('d', line(xs.map((v,i)=>[v, y1[i]]))).attr('stroke','#0ea5a4');
+
     [path0, path1].forEach(p=>{
       const L = p.node().getTotalLength();
       p.attr('stroke-dasharray',`${L} ${L}`).attr('stroke-dashoffset',L)
-       .transition().duration(900).ease(d3.easeCubicOut)
-       .attr('stroke-dashoffset',0);
+       .transition().duration(900).ease(d3.easeCubicOut).attr('stroke-dashoffset',0);
     });
 
     const legend = g.append('g').attr('class','legend').attr('transform',`translate(${w-290},16)`);
-    [
-      {c:'#eab308', text:'p(x, y = 0) × v(x)'},
-      {c:'#0ea5a4', text:'p(x, y = 1) × v(x)'}
-    ].forEach((it,i)=>{
-      const L = legend.append('g').attr('transform',`translate(0,${i*22})`);
-      L.append('line').attr('class','sw').attr('x1',0).attr('x2',28).attr('y1',0).attr('y2',0).attr('stroke',it.c).attr('stroke-width',3);
-      L.append('text').attr('x',36).attr('y',5).text(it.text).style('font-style','italic');
-    });
+    [{c:'#eab308', text:'p(x, y = 0) × v(x)'},{c:'#0ea5a4', text:'p(x, y = 1) × v(x)'}]
+      .forEach((it,i)=>{ const L = legend.append('g').attr('transform',`translate(0,${i*22})`);
+        L.append('line').attr('x1',0).attr('x2',28).attr('y1',0).attr('y2',0).attr('stroke',it.c).attr('stroke-width',3);
+        L.append('text').attr('x',36).attr('y',5).text(it.text).style('font-style','italic'); });
 
     let cutL = 0.95, cutR = 1.30;
     const shade = g.append('path').attr('class','shade');
@@ -563,63 +466,39 @@
 
     function updateShade(){
       const pts = [];
-      xs.forEach((vx,i)=>{
-        const m = (vx>=cutL && vx<=cutR) ? Math.min(y0[i], y1[i]) : 0;
-        pts.push([vx, m]);
-      });
-      const area = d3.area()
-        .x(d=>x(d[0])).y0(y(0)).y1(d=>y(d[1])).curve(d3.curveMonotoneX);
+      xs.forEach((vx,i)=>{ const m = (vx>=cutL && vx<=cutR) ? Math.min(y0[i], y1[i]) : 0; pts.push([vx, m]); });
+      const area = d3.area().x(d=>x(d[0])).y0(y(0)).y1(d=>y(d[1])).curve(d3.curveMonotoneX);
       shade.attr('d', area(pts));
-      L.attr('x1',x(cutL)).attr('x2',x(cutL));
-      R.attr('x1',x(cutR)).attr('x2',x(cutR));
-      hL.attr('cx',x(cutL)).attr('cy',h);
-      hR.attr('cx',x(cutR)).attr('cy',h);
+      L.attr('x1',x(cutL)).attr('x2',x(cutL)); R.attr('x1',x(cutR)).attr('x2',x(cutR));
+      hL.attr('cx',x(cutL)).attr('cy',h); hR.attr('cx',x(cutR)).attr('cy',h);
     }
     updateShade();
 
-    const dragL = d3.drag().on('drag', (ev)=>{
-      cutL = x.invert(Math.max(0, Math.min(x(cutR)-8, ev.x)));
-      updateShade();
-    });
-    const dragR = d3.drag().on('drag', (ev)=>{
-      cutR = x.invert(Math.min(w, Math.max(x(cutL)+8, ev.x)));
-      updateShade();
-    });
-    hL.style('cursor','ew-resize').call(dragL);
-    hR.style('cursor','ew-resize').call(dragR);
+    hL.style('cursor','ew-resize').call(d3.drag().on('drag', ev=>{ cutL = x.invert(Math.max(0, Math.min(x(cutR)-8, ev.x))); updateShade(); }));
+    hR.style('cursor','ew-resize').call(d3.drag().on('drag', ev=>{ cutR = x.invert(Math.min(w, Math.max(x(cutL)+8, ev.x))); updateShade(); }));
 
     const guide = g.append('line').attr('class','guide').attr('y1',0).attr('y2',h).style('opacity',0);
     const tip = d3.select('#tip11');
 
-    g.append('rect').attr('x',0).attr('y',0).attr('width',w).attr('height',h)
-      .attr('fill','transparent')
+    g.append('rect').attr('x',0).attr('y',0).attr('width',w).attr('height',h).attr('fill','transparent')
       .on('mousemove', function(ev){
         const [mx] = d3.pointer(ev,this);
         const xv = x.invert(mx);
         const yv0 = k0*pdf(xv,mu0,s0), yv1 = k1*pdf(xv,mu1,s1);
         guide.attr('x1',mx).attr('x2',mx).style('opacity',1);
-        tip.html(
-          `<div><b>x</b> = ${xv.toFixed(2)}</div>
-           <div style="color:#eab308">p(x,y=0) = ${yv0.toFixed(3)}</div>
-           <div style="color:#0ea5a4">p(x,y=1) = ${yv1.toFixed(3)}</div>`
-        ).style('left', (ev.clientX)+'px')
-         .style('top',  (ev.clientY)+'px')
-         .style('opacity',1);
+        tip.html(`<div><b>x</b> = ${xv.toFixed(2)}</div>
+                  <div style="color:#eab308">p(x,y=0) = ${yv0.toFixed(3)}</div>
+                  <div style="color:#0ea5a4">p(x,y=1) = ${yv1.toFixed(3)}</div>`)
+           .style('left',(ev.clientX)+'px').style('top',(ev.clientY)+'px').style('opacity',1);
       })
-      .on('mouseleave', ()=>{
-        guide.style('opacity',0);
-        tip.style('opacity',0);
-      });
+      .on('mouseleave', ()=>{ guide.style('opacity',0); tip.style('opacity',0); });
 
     function shadedIntegral(){
       let S = 0; const dx = (x.invert(1)-x.invert(0));
-      xs.forEach((vx,i)=>{
-        if(vx>=cutL && vx<=cutR) S += Math.min(y0[i],y1[i]) * dx;
-      });
+      xs.forEach((vx,i)=>{ if(vx>=cutL && vx<=cutR) S += Math.min(y0[i],y1[i]) * dx; });
       return S;
     }
-    const badge = g.append('text').attr('x',8).attr('y',16)
-      .style('font-size','12px').style('fill','#64748b');
+    const badge = g.append('text').attr('x',8).attr('y',16).style('font-size','12px').style('fill','#64748b');
     d3.timer(()=>{ badge.text(`Overlap ∫ min(pdf0, pdf1) dx ≈ ${shadedIntegral().toFixed(3)}  (peaks: 0.22 / 0.25)`); }, 300);
   })();
 
@@ -634,13 +513,8 @@
     const g = svg.append("g").attr("transform", `translate(${M.l},${M.t})`);
 
     const GEO_URL = "MasterPlan2019PlanningAreaBoundaryNoSea.geojson";
-    const eastNames = [
-      "Bedok","Tampines","Pasir Ris","Changi","Changi Bay","Changi Airport",
-      "Marine Parade","Geylang","Kallang","Serangoon","Hougang","Sengkang","Punggol"
-    ];
-    function getName(props){
-      return props?.PLN_AREA_N ?? props?.Name ?? props?.name ?? props?.PLN_AREA ?? "";
-    }
+    const eastNames = ["Bedok","Tampines","Pasir Ris","Changi","Changi Bay","Changi Airport","Marine Parade","Geylang","Kallang","Serangoon","Hougang","Sengkang","Punggol"];
+    function getName(props){ return props?.PLN_AREA_N ?? props?.Name ?? props?.name ?? props?.PLN_AREA ?? ""; }
 
     (async function init(){
       const raw = await fetch(GEO_URL).then(r => r.json());
@@ -658,22 +532,18 @@
       const cellsX = 12, cellsY = 12;
       g.append("g").attr("class","grid").selectAll("line.v")
         .data(d3.range(cellsX+1)).join("line")
-        .attr("x1", d => d * (w/cellsX)).attr("x2", d => d * (w/cellsX))
+        .attr("x1", d => d*(w/cellsX)).attr("x2", d => d*(w/cellsX))
         .attr("y1", 0).attr("y2", h).attr("opacity",0)
         .transition().duration(600).delay(d=>d*12).attr("opacity",1);
 
       g.append("g").attr("class","grid").selectAll("line.h")
         .data(d3.range(cellsY+1)).join("line")
-        .attr("y1", d => d * (h/cellsY)).attr("y2", d => d * (h/cellsY))
+        .attr("y1", d => d*(h/cellsY)).attr("y2", d => d*(h/cellsY))
         .attr("x1", 0).attr("x2", w).attr("opacity",0)
         .transition().duration(600).delay(d=>d*12).attr("opacity",1);
 
-      g.selectAll("path.land")
-        .data(fc.features)
-        .join("path")
-        .attr("class","land")
-        .attr("d", path)
-        .attr("opacity",0)
+      g.selectAll("path.land").data(fc.features).join("path")
+        .attr("class","land").attr("d", path).attr("opacity",0)
         .transition().duration(700).delay(200).attr("opacity",1);
 
       let centerLonLat;
@@ -684,53 +554,38 @@
 
       const ringGroup = g.append("g");
 
-      ringGroup.append("circle")
-        .attr("class","ring")
+      ringGroup.append("circle").attr("class","ring")
         .attr("cx", ringCenter[0]).attr("cy", ringCenter[1]).attr("r", ringR)
-        .attr("opacity",0)
-        .transition().duration(700).delay(400).attr("opacity",1);
+        .attr("opacity",0).transition().duration(700).delay(400).attr("opacity",1);
 
-      const pt = ringGroup.append("circle")
-        .attr("class","pt")
-        .attr("r",5).attr("cx", ringCenter[0]-40).attr("cy", ringCenter[1]-20)
-        .attr("opacity",0)
-        .transition().duration(700).delay(450).attr("opacity",1);
+      ringGroup.append("circle").attr("class","pt").attr("r",5)
+        .attr("cx", ringCenter[0]-40).attr("cy", ringCenter[1]-20)
+        .attr("opacity",0).transition().duration(700).delay(450).attr("opacity",1);
 
-      const xPrimeHalo = ringGroup.append("text")
-        .attr("class","label label-halo")
-        .attr("text-anchor","middle").attr("dominant-baseline","middle")
-        .attr("opacity",0).text("x′");
+      const xPrimeHalo = ringGroup.append("text").attr("class","label label-halo")
+        .attr("text-anchor","middle").attr("dominant-baseline","middle").attr("opacity",0).text("x′");
+      const xPrime = ringGroup.append("text").attr("class","label")
+        .attr("text-anchor","middle").attr("dominant-baseline","middle").attr("opacity",0).text("x′");
 
-      const xPrime = ringGroup.append("text")
-        .attr("class","label")
-        .attr("text-anchor","middle").attr("dominant-baseline","middle")
-        .attr("opacity",0).text("x′");
-
-      const labelB = ringGroup.append("text")
-        .attr("class","label")
+      const labelB = ringGroup.append("text").attr("class","label")
         .attr("x", ringCenter[0]-ringR-14).attr("y", ringCenter[1]+ringR-8)
-        .text("B(x′)").attr("opacity",0)
-        .transition().duration(700).delay(500).attr("opacity",1);
+        .text("B(x′)").attr("opacity",0).transition().duration(700).delay(500).attr("opacity",1);
 
       positionXPrimeCenter(ringCenter[0], ringCenter[1]);
       xPrimeHalo.transition().duration(700).delay(450).attr("opacity",1);
       xPrime.transition().duration(700).delay(450).attr("opacity",1);
 
-      g.append("text")
-        .attr("class","hint")
-        .attr("x", 8).attr("y", h-8)
-        .text(eastFeatures.length ? "Loaded East Singapore from your file. Drag ring to move; scroll to change radius." :
-                                    "No East filter match; showing full file. Drag ring to move; scroll to change radius.");
+      g.append("text").attr("class","hint").attr("x", 8).attr("y", h-8)
+        .text(eastFeatures.length ? "Loaded East Singapore from your file. Drag ring to move; scroll to change radius."
+                                  : "No East filter match; showing full file. Drag ring to move; scroll to change radius.");
 
-      const hit = ringGroup.append("circle")
-        .attr("cx", ringCenter[0]).attr("cy", ringCenter[1])
+      const hit = ringGroup.append("circle").attr("cx", ringCenter[0]).attr("cy", ringCenter[1])
         .attr("r", ringR).attr("fill","transparent").style("cursor","grab");
 
-      const drag = d3.drag()
+      hit.call(d3.drag()
         .on("start", () => hit.style("cursor","grabbing"))
-        .on("drag", (ev) => { ringCenter = [ev.x, ev.y]; updateRing(); })
-        .on("end", () => hit.style("cursor","grab"));
-      hit.call(drag);
+        .on("drag", ev => { ringCenter = [ev.x, ev.y]; updateRing(); })
+        .on("end", () => hit.style("cursor","grab")));
 
       svg.on("wheel", (ev) => {
         ev.preventDefault();
@@ -740,22 +595,14 @@
       }, {passive:false});
 
       function updateRing(){
-        ringGroup.select("circle.ring")
-          .attr("cx", ringCenter[0]).attr("cy", ringCenter[1]).attr("r", ringR);
+        ringGroup.select("circle.ring").attr("cx", ringCenter[0]).attr("cy", ringCenter[1]).attr("r", ringR);
         hit.attr("cx", ringCenter[0]).attr("cy", ringCenter[1]).attr("r", ringR);
-
-        const px = ringCenter[0] - ringR*0.25,
-              py = ringCenter[1] - ringR*0.18;
+        const px = ringCenter[0] - ringR*0.25, py = ringCenter[1] - ringR*0.18;
         ringGroup.select("circle.pt").attr("cx", px).attr("cy", py);
-
         positionXPrimeCenter(ringCenter[0], ringCenter[1]);
-        labelB.attr("x", ringCenter[0]-ringR-14)
-              .attr("y", ringCenter[1]+ringR-8);
+        labelB.attr("x", ringCenter[0]-ringR-14).attr("y", ringCenter[1]+ringR-8);
       }
-      function positionXPrimeCenter(cx, cy){
-        xPrime.attr("x", cx).attr("y", cy);
-        xPrimeHalo.attr("x", cx).attr("y", cy);
-      }
+      function positionXPrimeCenter(cx, cy){ xPrime.attr("x", cx).attr("y", cy); xPrimeHalo.attr("x", cx).attr("y", cy); }
     })();
   })();
   </script>
