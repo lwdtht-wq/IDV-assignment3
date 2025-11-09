@@ -580,6 +580,10 @@ If opening this page shows no figure for Chart 9 on first load, please refresh o
     const bandL = g.append('path').attr('class','shade'); // [cutL,1] 曲线之间
     const bandR = g.append('path').attr('class','shade'); // [1,cutR] 曲线之间
 
+    const vlines = g.append('g');
+    const L = vlines.append('line').attr('class','vline').attr('y1',0).attr('y2',h);
+    const R = vlines.append('line').attr('class','vline').attr('y1',0).attr('y2',h);
+
     const hL = vlines.append('circle').attr('class','handle').attr('r',4);
     const hR = vlines.append('circle').attr('class','handle').attr('r',4);
 
