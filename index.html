@@ -25,10 +25,8 @@
   .note header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px dashed #f0c971}
   .note header b{font-size:14px}
   .note small{color:#8a6d3b}
-  .note textarea{width:100%;min-height:160px;border:0;outline:none;background:transparent;padding:10px 12px 0 12px;resize:vertical;font-size:14px;line-height:1.45}
-  .note .btns{display:flex;gap:8px;padding:10px 12px 12px}
-  .note button{padding:6px 12px;border:1px solid #e9c873;border-radius:8px;background:#ffefb0;color:#754c00;cursor:pointer}
-  .note button:hover{filter:brightness(0.98)}
+  .note textarea{width:100%;min-height:160px;border:0;outline:none;background:transparent;padding:10px 12px 12px 12px;resize:vertical;font-size:14px;line-height:1.45}
+  .note-msg{font-size:12px;color:#64748b;margin:6px 12px 12px}
 
   /* chart 4 specific */
   .series-area{fill-opacity:.55;stroke-width:1.2}
@@ -77,8 +75,6 @@
   .pt{fill:#0ea5e9;stroke:#0b4a6f;stroke-width:1.2}
   .label{font-size:16px;fill:#0b4a6f;pointer-events:none}
   .label-halo{paint-order:stroke fill; stroke:#fff; stroke-width:3;}
-  .hint{font-size:12px;fill:#64748b}
-  .note-msg{font-size:12px;color:#64748b;margin-top:6px}
 
   /* chart 11 (function) — curves only strokes */
   .curve{ fill:none; stroke-width:3; }
@@ -102,11 +98,6 @@
         <div class="note">
           <header><b>Notes — Chart 4</b><small id="s4"></small></header>
           <textarea id="n4" data-key="note4" data-default="At the beginning, I sent the assignment requirements and the reference images to GPT and asked it to generate the corresponding HTML. However, it kept failing to reproduce the numerical peak values correctly, so I searched the HTML for the places where those values could be edited, found them, and debugged/modified them myself. After five or six rounds of changes, I produced a figure that closely matches the reference."></textarea>
-          <div class="btns">
-            <button data-act="save" data-target="n4">Save</button>
-            <button data-act="load" data-target="n4">Load</button>
-            <button data-act="clear" data-target="n4">Clear</button>
-          </div>
         </div>
       </div>
 
@@ -131,14 +122,9 @@
         <!-- sticky note -->
         <div class="note">
           <header><b>Notes — Chart 9</b><small id="s9"></small></header>
-          <textarea id="n9" data-key="note9" data-default="Before creating this figure, I asked GPT what the fastest approach would be. It gave me three options, and I chose to draw the SVG myself in Illustrator and then send it to GPT to add the fade-in and interactive effects. During the process, the interactions failed because the SVG wasn’t grouped, so I regrouped the elements. After four or five more rounds of tweaking the interactions with GPT, I completed the figure.
-
-If opening this page shows no figure for Chart 9 on first load, please refresh once."></textarea>
-          <div class="btns">
-            <button data-act="save" data-target="n9">Save</button>
-            <button data-act="load" data-target="n9">Load</button>
-            <button data-act="clear" data-target="n9">Clear</button>
-          </div>
+          <textarea id="n9" data-key="note9" data-default="Before creating this figure, I asked GPT what the fastest approach would be. It gave me three options, and I chose to draw the SVG myself in Illustrator and then send it to GPT to add the fade-in and interactive effects. During the process, the interactions failed because the SVG wasn’t grouped, so I regrouped the elements. After four or five more rounds of tweaking the interactions with GPT, I completed the figure."></textarea>
+          <!-- extra tip below the sticky note -->
+          <div class="note-msg">If opening this page shows no figure for Chart 9 on first load, please refresh once.</div>
         </div>
       </div>
     </section>
@@ -155,11 +141,6 @@ If opening this page shows no figure for Chart 9 on first load, please refresh o
         <div class="note">
           <header><b>Notes — Chart 8</b><small id="s8"></small></header>
           <textarea id="n8" data-key="note8" data-default="This was the easiest figure for me: after I sent GPT the assignment requirements and the reference image, it generated exactly what I needed on the first try."></textarea>
-          <div class="btns">
-            <button data-act="save" data-target="n8">Save</button>
-            <button data-act="load" data-target="n8">Load</button>
-            <button data-act="clear" data-target="n8">Clear</button>
-          </div>
         </div>
       </div>
 
@@ -182,11 +163,6 @@ If opening this page shows no figure for Chart 9 on first load, please refresh o
         <div class="note">
           <header><b>Notes — Chart 11</b><small id="s11"></small></header>
           <textarea id="n11" data-key="note11" data-default="For this figure, after I sent it to GPT and got the first output, the same issue as before appeared—the function’s peak value didn’t match what I needed. Even though I highlighted exactly which values were wrong, it still didn’t fix them. So I asked GPT why the peak was incorrect in the code; this time it corrected the mistake and explained how to resolve it. After another three or four rounds of back-and-forth, we finally produced the figure."></textarea>
-          <div class="btns">
-            <button data-act="save" data-target="n11">Save</button>
-            <button data-act="load" data-target="n11">Load</button>
-            <button data-act="clear" data-target="n11">Clear</button>
-          </div>
         </div>
       </div>
 
@@ -205,11 +181,6 @@ If opening this page shows no figure for Chart 9 on first load, please refresh o
         <div class="note">
           <header><b>Notes — Chart 10</b><small id="s10"></small></header>
           <textarea id="n10" data-key="note10" data-default="For this figure, after GPT produced the first version, it told me a map was needed. I asked GPT where to download the required file, then followed the link to download a map of Singapore and sent it to GPT. In the next output, I noticed the “x” symbol was missing, so I specified that I needed an “x” at the center of the circle. This time, it met my requirement well."></textarea>
-          <div class="btns">
-            <button data-act="save" data-target="n10">Save</button>
-            <button data-act="load" data-target="n10">Load</button>
-            <button data-act="clear" data-target="n10">Clear</button>
-          </div>
           <div class="note-msg">Put <code>MasterPlan2019PlanningAreaBoundaryNoSea.geojson</code> and <code>11.svg</code> in the SAME folder as this HTML.</div>
         </div>
       </div>
@@ -221,26 +192,20 @@ If opening this page shows no figure for Chart 9 on first load, please refresh o
   <script src="https://d3js.org/d3.v7.min.js"></script>
 
   <script>
-  /* ========== Notes (save/load/clear with localStorage) ========== */
+  /* ========== Notes (status + default load; buttons removed) ========== */
   (function initNotes(){
     const $ = sel => document.querySelector(sel);
     function setup(id){
       const ta = $('#'+id), status = $('#s'+id.slice(1));
       const key = 'IDV_notes_'+ta.dataset.key;
       const def = ta.dataset.default || '';
-      // load (prefer saved; else default from code)
       const saved = localStorage.getItem(key);
       ta.value = saved ?? def;
       status.textContent = saved ? 'Loaded (local)' : 'Loaded (default)';
-      ta.addEventListener('input', ()=> status.textContent = 'Editing…');
-      // buttons
-      document.querySelectorAll('button[data-target="'+id+'"]').forEach(btn=>{
-        btn.onclick = ()=>{
-          const act = btn.dataset.act;
-          if(act==='save'){ localStorage.setItem(key, ta.value); status.textContent='Saved'; }
-          if(act==='load'){ ta.value = localStorage.getItem(key) ?? def; status.textContent='Loaded'; }
-          if(act==='clear'){ localStorage.removeItem(key); ta.value = def; status.textContent='Cleared (default)'; }
-        };
+      ta.addEventListener('input', ()=>{
+        status.textContent = 'Editing…';
+        // 轻量自动保存，避免丢失（没有按钮了）
+        clearTimeout(ta._t); ta._t = setTimeout(()=>{ localStorage.setItem(key, ta.value); status.textContent='Saved'; }, 600);
       });
     }
     ['n4','n9','n8','n11','n10'].forEach(setup);
@@ -573,12 +538,12 @@ If opening this page shows no figure for Chart 9 on first load, please refresh o
         L.append('text').attr('x',36).attr('y',5).text(it.text).style('font-style','italic'); });
 
     /* ----- thresholds & shading (with triangular bands) ----- */
-    let cutL = 0.95, cutR = 1.31;           // 区间 [0.95, 1.31]
-    const xm = 1.00;                         // 中线 x=1（虚线）
+    let cutL = 0.95, cutR = 1.31;
+    const xm = 1.00;
 
-    const shade = g.append('path').attr('class','shade'); // x轴到 min 的底色
-    const bandL = g.append('path').attr('class','shade'); // [cutL,1] 曲线之间
-    const bandR = g.append('path').attr('class','shade'); // [1,cutR] 曲线之间
+    const shade = g.append('path').attr('class','shade'); // base area
+    const bandL = g.append('path').attr('class','shade'); // [cutL,1]
+    const bandR = g.append('path').attr('class','shade'); // [1,cutR]
 
     const vlines = g.append('g');
     const L = vlines.append('line').attr('class','vline').attr('y1',0).attr('y2',h);
@@ -588,7 +553,6 @@ If opening this page shows no figure for Chart 9 on first load, please refresh o
     const hR = vlines.append('circle').attr('class','handle').attr('r',4);
 
     function updateShade(){
-      // ① x 轴到 min(y0,y1) 的底色
       const ptsMin = [];
       xs.forEach((vx,i)=>{
         const m = (vx>=cutL && vx<=cutR) ? Math.min(y0[i], y1[i]) : 0;
@@ -597,10 +561,7 @@ If opening this page shows no figure for Chart 9 on first load, please refresh o
       const areaBase = d3.area().x(d=>x(d[0])).y0(y(0)).y1(d=>y(d[1])).curve(d3.curveMonotoneX);
       shade.attr('d', areaBase(ptsMin));
 
-      // ② 额外的两块三角（曲线之间）
-      const between = d3.area()
-        .x(d=>x(d.x)).y0(d=>y(d.low)).y1(d=>y(d.high)).curve(d3.curveMonotoneX);
-
+      const between = d3.area().x(d=>x(d.x)).y0(d=>y(d.low)).y1(d=>y(d.high)).curve(d3.curveMonotoneX);
       const ptsL = [], ptsR = [];
       xs.forEach((vx,i)=>{
         const low  = Math.min(y0[i], y1[i]);
@@ -611,7 +572,6 @@ If opening this page shows no figure for Chart 9 on first load, please refresh o
       bandL.attr('d', ptsL.length ? between(ptsL) : null);
       bandR.attr('d', ptsR.length ? between(ptsR) : null);
 
-      // ③ 虚线与把手
       L.attr('x1',x(cutL)).attr('x2',x(cutL));
       R.attr('x1',x(cutR)).attr('x2',x(cutR));
       hL.attr('cx',x(cutL)).attr('cy',h);
@@ -723,10 +683,6 @@ If opening this page shows no figure for Chart 9 on first load, please refresh o
       positionXPrimeCenter(ringCenter[0], ringCenter[1]);
       xPrimeHalo.transition().duration(700).delay(450).attr("opacity",1);
       xPrime.transition().duration(700).delay(450).attr("opacity",1);
-
-      g.append("text").attr("class","hint").attr("x", 8).attr("y", h-8)
-        .text(eastFeatures.length ? "Loaded East Singapore from your file. Drag ring to move; scroll to change radius."
-                                  : "No East filter match; showing full file. Drag ring to move; scroll to change radius.");
 
       const hit = ringGroup.append("circle").attr("cx", ringCenter[0]).attr("cy", ringCenter[1])
         .attr("r", ringR).attr("fill","transparent").style("cursor","grab");
