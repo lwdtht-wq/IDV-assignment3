@@ -1,55 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>All Charts — Combined Page</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>All Charts — Combined Page (with Notes)</title>
 
 <style>
   html,body{margin:0;background:#fff;font-family:system-ui,Segoe UI,Arial}
-  .wrap{max-width:980px;margin:28px auto;padding:0 16px}
+  .wrap{max-width:1100px;margin:28px auto;padding:0 16px}
   h2{margin:22px 0 6px;font-size:24px}
   .sub{color:#666;margin:0 0 12px}
   section{border-top:1px solid #eee;padding-top:18px;margin-top:10px}
 
-  /* layout: chart + notes */
-  .two-col{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
-  @media (max-width: 900px){
-    .two-col{grid-template-columns:1fr}
-  }
-  .viz{min-width:0}
-
-  /* sticky note card */
-  .note-card{
-    background:#fff9c4; /* pale yellow */
-    border:1px solid #f1e6a6;
-    border-radius:12px;
-    padding:10px;
-    box-shadow:0 6px 16px rgba(0,0,0,.06);
-  }
-  .note-title{
-    font-weight:600;
-    margin:0 0 8px;
-  }
-  .note-card textarea{
-    width:100%;
-    min-height:140px;
-    resize:vertical;
-    border:1px dashed #c9b96b;
-    border-radius:8px;
-    padding:10px;
-    background:#fffdde;
-    font:14px/1.5 system-ui,Segoe UI,Arial;
-  }
-  .note-extra{
-    margin-top:8px;
-    font-size:12px;
-    color:#555;
-  }
+  /* layout: chart + note side by side */
+  .chart-row{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
+  @media (max-width:900px){ .chart-row{grid-template-columns:1fr} }
 
   /* shared svg & axes */
   svg{width:100%;height:auto;display:block;background:#fff}
   .axis path,.axis line{stroke:#111;stroke-width:1}
   .grid .tick line{stroke:#e5e7eb}
+
+  /* sticky note */
+  .note{background:#fffbe6;border:1px solid #f3d08b;border-radius:12px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+  .note header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px dashed #f0c971}
+  .note header b{font-size:14px}
+  .note small{color:#8a6d3b}
+  .note textarea{width:100%;min-height:160px;border:0;outline:none;background:transparent;padding:10px 12px 0 12px;resize:vertical;font-size:14px;line-height:1.45}
+  .note .btns{display:flex;gap:8px;padding:10px 12px 12px}
+  .note button{padding:6px 12px;border:1px solid #e9c873;border-radius:8px;background:#ffefb0;color:#754c00;cursor:pointer}
+  .note button:hover{filter:brightness(0.98)}
 
   /* chart 4 specific */
   .series-area{fill-opacity:.55;stroke-width:1.2}
@@ -99,9 +78,9 @@
   .label{font-size:16px;fill:#0b4a6f;pointer-events:none}
   .label-halo{paint-order:stroke fill; stroke:#fff; stroke-width:3;}
   .hint{font-size:12px;fill:#64748b}
-  .note{font-size:12px;color:#64748b;margin-top:6px}
+  .note-msg{font-size:12px;color:#64748b;margin-top:6px}
 
-  /* chart 11 (function) — 确保曲线不被填充，仅描边 */
+  /* chart 11 (function) — curves only strokes */
   .curve{ fill:none; stroke-width:3; }
   .shade{ fill:#9ca3af; fill-opacity:.45; }
   .vline{ stroke:#111; stroke-dasharray:6 6; stroke-width:2; }
@@ -116,28 +95,31 @@
       <h2>Chart 4 (frequency)</h2>
       <p class="sub">Values are approximate. Includes one transition and one interaction.</p>
 
-      <div class="two-col">
-        <div class="viz">
-          <svg id="chart4" viewBox="0 0 920 240" aria-label="frequency area chart"></svg>
-          <div class="tooltip" id="tip4"></div>
-        </div>
+      <div class="chart-row">
+        <svg id="chart4" viewBox="0 0 920 240" aria-label="frequency area chart"></svg>
 
-        <aside class="notes-col">
-          <div class="note-card">
-            <div class="note-title">Notes (Chart 4)</div>
-            <textarea id="note4" spellcheck="false">At the beginning, I sent the assignment requirements and the reference images to GPT and asked it to generate the corresponding HTML. However, it kept failing to reproduce the numerical peak values correctly, so I searched the HTML for the places where those values could be edited, found them, and debugged/modified them myself. After five or six rounds of changes, I produced a figure that closely matches the reference.</textarea>
+        <!-- sticky note -->
+        <div class="note">
+          <header><b>Notes — Chart 4</b><small id="s4"></small></header>
+          <textarea id="n4" data-key="note4" data-default="At the beginning, I sent the assignment requirements and the reference images to GPT and asked it to generate the corresponding HTML. However, it kept failing to reproduce the numerical peak values correctly, so I searched the HTML for the places where those values could be edited, found them, and debugged/modified them myself. After five or six rounds of changes, I produced a figure that closely matches the reference."></textarea>
+          <div class="btns">
+            <button data-act="save" data-target="n4">Save</button>
+            <button data-act="load" data-target="n4">Load</button>
+            <button data-act="clear" data-target="n4">Clear</button>
           </div>
-        </aside>
+        </div>
       </div>
+
+      <div class="tooltip" id="tip4"></div>
     </section>
 
-    <!-- Chart 9 (sketch SVG interactions) -->
+    <!-- Chart 9 -->
     <section id="sec9">
       <h2>Chart 9 (sketch) — interactive</h2>
       <p class="sub">Fade-in entrance; head/face gentle sway; click the hand to wave ×2.</p>
 
-      <div class="two-col">
-        <div class="viz">
+      <div class="chart-row">
+        <div>
           <div id="stage9" class="enter"></div>
           <div class="tools">
             <button id="replay9">Replay fade-in</button>
@@ -146,78 +128,90 @@
           </div>
         </div>
 
-        <aside class="notes-col">
-          <div class="note-card">
-            <div class="note-title">Notes (Chart 9)</div>
-            <textarea id="note9" spellcheck="false">Before creating this figure, I asked GPT what the fastest approach would be. It gave me three options, and I chose to draw the SVG myself in Illustrator and then send it to GPT to add the fade-in and interactive effects. During the process, the interactions failed because the SVG wasn’t grouped, so I regrouped the elements. After four or five more rounds of tweaking the interactions with GPT, I completed the figure.</textarea>
+        <!-- sticky note -->
+        <div class="note">
+          <header><b>Notes — Chart 9</b><small id="s9"></small></header>
+          <textarea id="n9" data-key="note9" data-default="Before creating this figure, I asked GPT what the fastest approach would be. It gave me three options, and I chose to draw the SVG myself in Illustrator and then send it to GPT to add the fade-in and interactive effects. During the process, the interactions failed because the SVG wasn’t grouped, so I regrouped the elements. After four or five more rounds of tweaking the interactions with GPT, I completed the figure.
+
+If opening this page shows no figure for Chart 9 on first load, please refresh once."></textarea>
+          <div class="btns">
+            <button data-act="save" data-target="n9">Save</button>
+            <button data-act="load" data-target="n9">Load</button>
+            <button data-act="clear" data-target="n9">Clear</button>
           </div>
-          <!-- extra line BELOW the sticky note (not inside textarea) -->
-          <p class="note-extra">Note: If the Chart 9 graphic doesn't appear on first load, please refresh the page.</p>
-        </aside>
+        </div>
       </div>
     </section>
 
-    <!-- Chart 8 (bars) -->
+    <!-- Chart 8 -->
     <section id="sec8">
       <h2>Chart 8 (simple bars)</h2>
       <p class="sub">Replicated with D3.js — includes one transition and one interaction.</p>
 
-      <div class="two-col">
-        <div class="viz">
-          <svg id="chart8" viewBox="0 0 920 420" aria-label="Cross Validation Accuracy chart"></svg>
-          <div class="ctrl">
-            <label><input id="toggleGhost8" class="toggle" type="checkbox" checked>Show Baseline (dashed)</label>
-            <span style="color:#666">Values are approximate.</span>
-          </div>
-          <div class="tooltip" id="tip8"></div>
-        </div>
+      <div class="chart-row">
+        <svg id="chart8" viewBox="0 0 920 420" aria-label="Cross Validation Accuracy chart"></svg>
 
-        <aside class="notes-col">
-          <div class="note-card">
-            <div class="note-title">Notes (Chart 8)</div>
-            <textarea id="note8" spellcheck="false">This was the easiest figure for me: after I sent GPT the assignment requirements and the reference image, it generated exactly what I needed on the first try.</textarea>
+        <!-- sticky note -->
+        <div class="note">
+          <header><b>Notes — Chart 8</b><small id="s8"></small></header>
+          <textarea id="n8" data-key="note8" data-default="This was the easiest figure for me: after I sent GPT the assignment requirements and the reference image, it generated exactly what I needed on the first try."></textarea>
+          <div class="btns">
+            <button data-act="save" data-target="n8">Save</button>
+            <button data-act="load" data-target="n8">Load</button>
+            <button data-act="clear" data-target="n8">Clear</button>
           </div>
-        </aside>
+        </div>
       </div>
+
+      <div class="ctrl">
+        <label><input id="toggleGhost8" class="toggle" type="checkbox" checked>Show Baseline (dashed)</label>
+        <span style="color:#666">Values are approximate.</span>
+      </div>
+      <div class="tooltip" id="tip8"></div>
     </section>
 
-    <!-- Chart 11 (pdf) -->
+    <!-- Chart 11 -->
     <section id="sec11">
       <h2>Chart 11 (function)</h2>
       <p class="sub">Peaks scaled to 0.22 (yellow) and 0.25 (teal). Drag the dashed lines to adjust the ambiguous region.</p>
 
-      <div class="two-col">
-        <div class="viz">
-          <svg id="chart11" viewBox="0 0 900 520" aria-label="pdf chart"></svg>
-          <div class="tooltip" id="tip11"></div>
-        </div>
+      <div class="chart-row">
+        <svg id="chart11" viewBox="0 0 900 520" aria-label="pdf chart"></svg>
 
-        <aside class="notes-col">
-          <div class="note-card">
-            <div class="note-title">Notes (Chart 11)</div>
-            <textarea id="note11" spellcheck="false">For this figure, after I sent it to GPT and got the first output, the same issue as before appeared—the function’s peak value didn’t match what I needed. Even though I highlighted exactly which values were wrong, it still didn’t fix them. So I asked GPT why the peak was incorrect in the code; this time it corrected the mistake and explained how to resolve it. After another three or four rounds of back-and-forth, we finally produced the figure.</textarea>
+        <!-- sticky note -->
+        <div class="note">
+          <header><b>Notes — Chart 11</b><small id="s11"></small></header>
+          <textarea id="n11" data-key="note11" data-default="For this figure, after I sent it to GPT and got the first output, the same issue as before appeared—the function’s peak value didn’t match what I needed. Even though I highlighted exactly which values were wrong, it still didn’t fix them. So I asked GPT why the peak was incorrect in the code; this time it corrected the mistake and explained how to resolve it. After another three or four rounds of back-and-forth, we finally produced the figure."></textarea>
+          <div class="btns">
+            <button data-act="save" data-target="n11">Save</button>
+            <button data-act="load" data-target="n11">Load</button>
+            <button data-act="clear" data-target="n11">Clear</button>
           </div>
-        </aside>
+        </div>
       </div>
+
+      <div class="tooltip" id="tip11"></div>
     </section>
 
-    <!-- Chart 10 (map) -->
+    <!-- Chart 10 -->
     <section id="sec10">
       <h2>Chart 10 (map)</h2>
       <p class="sub">Loaded from your GeoJSON. Drag the red circle; use mouse wheel to change radius.</p>
 
-      <div class="two-col">
-        <div class="viz">
-          <svg id="chart10" viewBox="0 0 820 640" aria-label="map"></svg>
-          <div class="note">Put <code>MasterPlan2019PlanningAreaBoundaryNoSea.geojson</code> and <code>11.svg</code> in the SAME folder as this HTML.</div>
-        </div>
+      <div class="chart-row">
+        <svg id="chart10" viewBox="0 0 820 640" aria-label="map"></svg>
 
-        <aside class="notes-col">
-          <div class="note-card">
-            <div class="note-title">Notes (Chart 10)</div>
-            <textarea id="note10" spellcheck="false">For this figure, after GPT produced the first version, it told me a map was needed. I asked GPT where to download the required file, then followed the link to download a map of Singapore and sent it to GPT. In the next output, I noticed the “x” symbol was missing, so I specified that I needed an “x” at the center of the circle. This time, it met my requirement well.</textarea>
+        <!-- sticky note -->
+        <div class="note">
+          <header><b>Notes — Chart 10</b><small id="s10"></small></header>
+          <textarea id="n10" data-key="note10" data-default="For this figure, after GPT produced the first version, it told me a map was needed. I asked GPT where to download the required file, then followed the link to download a map of Singapore and sent it to GPT. In the next output, I noticed the “x” symbol was missing, so I specified that I needed an “x” at the center of the circle. This time, it met my requirement well."></textarea>
+          <div class="btns">
+            <button data-act="save" data-target="n10">Save</button>
+            <button data-act="load" data-target="n10">Load</button>
+            <button data-act="clear" data-target="n10">Clear</button>
           </div>
-        </aside>
+          <div class="note-msg">Put <code>MasterPlan2019PlanningAreaBoundaryNoSea.geojson</code> and <code>11.svg</code> in the SAME folder as this HTML.</div>
+        </div>
       </div>
     </section>
 
@@ -227,17 +221,29 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
 
   <script>
-  /* ---------- notes: auto save / restore ---------- */
+  /* ========== Notes (save/load/clear with localStorage) ========== */
   (function initNotes(){
-    const ids = ['note4','note9','note8','note11','note10'];
-    ids.forEach(id=>{
-      const el = document.getElementById(id);
-      if(!el) return;
-      const key = 'chart_note_' + id;
+    const $ = sel => document.querySelector(sel);
+    function setup(id){
+      const ta = $('#'+id), status = $('#s'+id.slice(1));
+      const key = 'IDV_notes_'+ta.dataset.key;
+      const def = ta.dataset.default || '';
+      // load (prefer saved; else default from code)
       const saved = localStorage.getItem(key);
-      if(saved !== null) el.value = saved;
-      el.addEventListener('input', ()=> localStorage.setItem(key, el.value));
-    });
+      ta.value = saved ?? def;
+      status.textContent = saved ? 'Loaded (local)' : 'Loaded (default)';
+      ta.addEventListener('input', ()=> status.textContent = 'Editing…');
+      // buttons
+      document.querySelectorAll('button[data-target="'+id+'"]').forEach(btn=>{
+        btn.onclick = ()=>{
+          const act = btn.dataset.act;
+          if(act==='save'){ localStorage.setItem(key, ta.value); status.textContent='Saved'; }
+          if(act==='load'){ ta.value = localStorage.getItem(key) ?? def; status.textContent='Loaded'; }
+          if(act==='clear'){ localStorage.removeItem(key); ta.value = def; status.textContent='Cleared (default)'; }
+        };
+      });
+    }
+    ['n4','n9','n8','n11','n10'].forEach(setup);
   })();
 
   /* -------------------- Chart 4 -------------------- */
@@ -466,7 +472,6 @@
 
     const groups = g.selectAll('.g').data(data).enter().append('g')
       .attr('class','g').attr('transform', d => `translate(${x(d.cat)},0)`)
-
       .on('mouseenter', function(e,d){
         d3.select(this).selectAll('.bar,.ghost').attr('opacity',1);
         tip.style('opacity',1).html(
@@ -506,7 +511,7 @@
     });
   })();
 
-  /* -------------------- Chart 11 -------------------- */
+  /* -------------------- Chart 11 — with extra triangular shading -------------------- */
   (function chart11(){
     const svg = d3.select('#chart11'),
           W = 900, H = 520,
@@ -514,7 +519,7 @@
           w = W - M.l - M.r,
           h = H - M.t - M.b;
 
-    const g = svg.append('g').attr('transform',`translate( ${M.l}, ${M.t})`);
+    const g = svg.append('g').attr('transform',`translate(${M.l},${M.t})`);
 
     const x = d3.scaleLinear().domain([-2, 5]).range([0, w]);
     const y = d3.scaleLinear().domain([0, 0.30]).nice().range([h, 0]);
@@ -567,26 +572,60 @@
         L.append('line').attr('x1',0).attr('x2',28).attr('y1',0).attr('y2',0).attr('stroke',it.c).attr('stroke-width',3);
         L.append('text').attr('x',36).attr('y',5).text(it.text).style('font-style','italic'); });
 
-    let cutL = 0.95, cutR = 1.30;
-    const shade = g.append('path').attr('class','shade');
+    /* ----- thresholds & shading (with triangular bands) ----- */
+    let cutL = 0.95, cutR = 1.31;           // 区间 [0.95, 1.31]
+    const xm = 1.00;                         // 中线 x=1（虚线）
+
+    const shade = g.append('path').attr('class','shade'); // x轴到 min 的底色
+    const bandL = g.append('path').attr('class','shade'); // [cutL,1] 曲线之间
+    const bandR = g.append('path').attr('class','shade'); // [1,cutR] 曲线之间
+
     const vlines = g.append('g');
     const L = vlines.append('line').attr('class','vline').attr('y1',0).attr('y2',h);
+    const mid = vlines.append('line').attr('class','vline').attr('y1',0).attr('y2',h)
+      .attr('x1',x(xm)).attr('x2',x(xm));
     const R = vlines.append('line').attr('class','vline').attr('y1',0).attr('y2',h);
     const hL = vlines.append('circle').attr('class','handle').attr('r',4);
     const hR = vlines.append('circle').attr('class','handle').attr('r',4);
 
     function updateShade(){
-      const pts = [];
-      xs.forEach((vx,i)=>{ const m = (vx>=cutL && vx<=cutR) ? Math.min(y0[i], y1[i]) : 0; pts.push([vx, m]); });
-      const area = d3.area().x(d=>x(d[0])).y0(y(0)).y1(d=>y(d[1])).curve(d3.curveMonotoneX);
-      shade.attr('d', area(pts));
-      L.attr('x1',x(cutL)).attr('x2',x(cutL)); R.attr('x1',x(cutR)).attr('x2',x(cutR));
-      hL.attr('cx',x(cutL)).attr('cy',h); hR.attr('cx',x(cutR)).attr('cy',h);
+      // ① x 轴到 min(y0,y1) 的底色
+      const ptsMin = [];
+      xs.forEach((vx,i)=>{
+        const m = (vx>=cutL && vx<=cutR) ? Math.min(y0[i], y1[i]) : 0;
+        ptsMin.push([vx, m]);
+      });
+      const areaBase = d3.area().x(d=>x(d[0])).y0(y(0)).y1(d=>y(d[1])).curve(d3.curveMonotoneX);
+      shade.attr('d', areaBase(ptsMin));
+
+      // ② 额外的两块三角（曲线之间）
+      const between = d3.area()
+        .x(d=>x(d.x)).y0(d=>y(d.low)).y1(d=>y(d.high)).curve(d3.curveMonotoneX);
+
+      const ptsL = [], ptsR = [];
+      xs.forEach((vx,i)=>{
+        const low  = Math.min(y0[i], y1[i]);
+        const high = Math.max(y0[i], y1[i]);
+        if (vx>=cutL && vx<=xm) ptsL.push({x:vx, low, high});
+        if (vx>=xm  && vx<=cutR) ptsR.push({x:vx, low, high});
+      });
+      bandL.attr('d', ptsL.length ? between(ptsL) : null);
+      bandR.attr('d', ptsR.length ? between(ptsR) : null);
+
+      // ③ 虚线与把手
+      L.attr('x1',x(cutL)).attr('x2',x(cutL));
+      R.attr('x1',x(cutR)).attr('x2',x(cutR));
+      hL.attr('cx',x(cutL)).attr('cy',h);
+      hR.attr('cx',x(cutR)).attr('cy',h);
     }
     updateShade();
 
-    hL.style('cursor','ew-resize').call(d3.drag().on('drag', ev=>{ cutL = x.invert(Math.max(0, Math.min(x(cutR)-8, ev.x))); updateShade(); }));
-    hR.style('cursor','ew-resize').call(d3.drag().on('drag', ev=>{ cutR = x.invert(Math.min(w, Math.max(x(cutL)+8, ev.x))); updateShade(); }));
+    hL.style('cursor','ew-resize').call(d3.drag().on('drag', ev=>{
+      cutL = x.invert(Math.max(0, Math.min(x(cutR)-8, ev.x))); updateShade();
+    }));
+    hR.style('cursor','ew-resize').call(d3.drag().on('drag', ev=>{
+      cutR = x.invert(Math.min(w, Math.max(x(cutL)+8, ev.x))); updateShade();
+    }));
 
     const guide = g.append('line').attr('class','guide').attr('y1',0).attr('y2',h).style('opacity',0);
     const tip = d3.select('#tip11');
