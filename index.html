@@ -2,72 +2,36 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>All Charts — Combined Page + Notes</title>
+<title>All Charts — Combined Page</title>
 
 <style>
   html,body{margin:0;background:#fff;font-family:system-ui,Segoe UI,Arial}
-  .wrap{max-width:1100px;margin:28px auto;padding:0 16px}
+  .wrap{max-width:980px;margin:28px auto;padding:0 16px}
   h2{margin:22px 0 6px;font-size:24px}
   .sub{color:#666;margin:0 0 12px}
   section{border-top:1px solid #eee;padding-top:18px;margin-top:10px}
 
-  /* ========== 布局：图 + 备注 ========== */
-  .section-row{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) 300px;
-    gap:16px;
-    align-items:start;
-  }
-  @media (max-width: 900px){
-    .section-row{ grid-template-columns: 1fr; }
-  }
-  .chart-col{ min-width:0; } /* 防止 svg 溢出 */
-
-  /* 便利贴样式 */
+  /* 布局：图在左，便签在右；窄屏自动换行 */
+  .chart-row{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:16px;align-items:start}
+  .vis-col{min-width:0}
   .note-card{
-    position:relative;
-    background:#fff8c5;            /* 便签黄 */
-    border:1px solid #e6c85e;
-    border-radius:10px;
-    padding:10px 12px 14px;
-    box-shadow:0 10px 26px rgba(0,0,0,.08);
-    transform:rotate(-0.4deg);
+    background:#fffbe6;border:1px solid #f3d08b;border-radius:12px;padding:10px;
+    box-shadow:0 6px 14px rgba(0,0,0,.08)
   }
-  .note-card::before{              /* 胶带效果 */
-    content:"";
-    position:absolute;
-    top:-10px; left:48px;
-    width:66px; height:18px;
-    background:rgba(255,255,255,.6);
-    border:1px solid rgba(0,0,0,.06);
-    transform:rotate(-4deg);
-    box-shadow:0 1px 3px rgba(0,0,0,.08);
+  .note-title{font-weight:600;font-size:14px;color:#8a5a00;margin:2px 0 6px}
+  .note-card textarea{
+    width:100%;min-height:120px;border:none;outline:none;resize:vertical;background:transparent;
+    font:14px/1.5 system-ui,Segoe UI,Arial;color:#5b4200
   }
-  .note-title{
-    display:flex; justify-content:space-between; align-items:center;
-    font-weight:600; font-size:14px; color:#7a5d00; margin-bottom:6px;
-  }
-  .note-btn{
-    font-size:12px; padding:4px 8px; border:1px solid #d1a227;
-    background:#fff5a0; border-radius:6px; cursor:pointer;
-  }
-  .note-btn:hover{ filter:brightness(1.06); }
-  .note-input{
-    width:100%; min-height:130px; resize:vertical;
-    border:0; outline:none; background:transparent;
-    font-size:14px; line-height:1.45; color:#4b3a00;
-  }
-  .note-saved{
-    position:absolute; right:10px; bottom:10px;
-    font-size:12px; color:#7a5d00; opacity:0; transition:opacity .2s;
-  }
+  .note-card textarea::placeholder{color:#b58a3a}
+  @media (max-width:860px){ .chart-row{grid-template-columns:1fr} }
 
-  /* ========== 共享：SVG与坐标轴 ========== */
+  /* shared svg & axes */
   svg{width:100%;height:auto;display:block;background:#fff}
   .axis path,.axis line{stroke:#111;stroke-width:1}
   .grid .tick line{stroke:#e5e7eb}
 
-  /* chart 4 */
+  /* chart 4 specific */
   .series-area{fill-opacity:.55;stroke-width:1.2}
   .series-area.dim{opacity:.25}
   .legend{font-size:13px}
@@ -117,7 +81,7 @@
   .hint{font-size:12px;fill:#64748b}
   .note{font-size:12px;color:#64748b;margin-top:6px}
 
-  /* chart 11 (function) */
+  /* chart 11 (function) — 确保曲线不被填充，仅描边 */
   .curve{ fill:none; stroke-width:3; }
   .shade{ fill:#9ca3af; fill-opacity:.45; }
   .vline{ stroke:#111; stroke-dasharray:6 6; stroke-width:2; }
@@ -131,15 +95,17 @@
     <section id="sec4">
       <h2>Chart 4 (frequency)</h2>
       <p class="sub">Values are approximate. Includes one transition and one interaction.</p>
-      <div class="section-row">
-        <div class="chart-col">
+      <div class="chart-row">
+        <div class="vis-col">
           <svg id="chart4" viewBox="0 0 920 240" aria-label="frequency area chart"></svg>
           <div class="tooltip" id="tip4"></div>
         </div>
-        <aside class="note-card" data-note="chart4">
-          <div class="note-title">📝 备注（Chart 4） <button class="note-btn clear-btn">清空</button></div>
-          <textarea class="note-input" placeholder="写点注释…"></textarea>
-          <div class="note-saved" aria-live="polite"></div>
+        <aside class="note-col">
+          <div class="note-card">
+            <div class="note-title">备注（Chart 4）</div>
+            <!-- 直接在这里编辑文字 -->
+            <textarea id="note4" spellcheck="false" placeholder="这里写 Chart 4 的说明…"></textarea>
+          </div>
         </aside>
       </div>
     </section>
@@ -148,8 +114,8 @@
     <section id="sec9">
       <h2>Chart 9 (sketch) — interactive</h2>
       <p class="sub">Fade-in entrance; head/face gentle sway; click the hand to wave ×2.</p>
-      <div class="section-row">
-        <div class="chart-col">
+      <div class="chart-row">
+        <div class="vis-col">
           <div id="stage9" class="enter"></div>
           <div class="tools">
             <button id="replay9">Replay fade-in</button>
@@ -157,10 +123,11 @@
             <button id="wave9">Wave hand ×2</button>
           </div>
         </div>
-        <aside class="note-card" data-note="chart9">
-          <div class="note-title">📝 备注（Chart 9） <button class="note-btn clear-btn">清空</button></div>
-          <textarea class="note-input" placeholder="写点注释…"></textarea>
-          <div class="note-saved" aria-live="polite"></div>
+        <aside class="note-col">
+          <div class="note-card">
+            <div class="note-title">备注（Chart 9）</div>
+            <textarea id="note9" spellcheck="false" placeholder="这里写 Chart 9 的说明…"></textarea>
+          </div>
         </aside>
       </div>
     </section>
@@ -169,8 +136,8 @@
     <section id="sec8">
       <h2>Chart 8 (simple bars)</h2>
       <p class="sub">Replicated with D3.js — includes one transition and one interaction.</p>
-      <div class="section-row">
-        <div class="chart-col">
+      <div class="chart-row">
+        <div class="vis-col">
           <svg id="chart8" viewBox="0 0 920 420" aria-label="Cross Validation Accuracy chart"></svg>
           <div class="ctrl">
             <label><input id="toggleGhost8" class="toggle" type="checkbox" checked>Show Baseline (dashed)</label>
@@ -178,10 +145,11 @@
           </div>
           <div class="tooltip" id="tip8"></div>
         </div>
-        <aside class="note-card" data-note="chart8">
-          <div class="note-title">📝 备注（Chart 8） <button class="note-btn clear-btn">清空</button></div>
-          <textarea class="note-input" placeholder="写点注释…"></textarea>
-          <div class="note-saved" aria-live="polite"></div>
+        <aside class="note-col">
+          <div class="note-card">
+            <div class="note-title">备注（Chart 8）</div>
+            <textarea id="note8" spellcheck="false" placeholder="这里写 Chart 8 的说明…"></textarea>
+          </div>
         </aside>
       </div>
     </section>
@@ -190,15 +158,16 @@
     <section id="sec11">
       <h2>Chart 11 (function)</h2>
       <p class="sub">Peaks scaled to 0.22 (yellow) and 0.25 (teal). Drag the dashed lines to adjust the ambiguous region.</p>
-      <div class="section-row">
-        <div class="chart-col">
+      <div class="chart-row">
+        <div class="vis-col">
           <svg id="chart11" viewBox="0 0 900 520" aria-label="pdf chart"></svg>
           <div class="tooltip" id="tip11"></div>
         </div>
-        <aside class="note-card" data-note="chart11">
-          <div class="note-title">📝 备注（Chart 11） <button class="note-btn clear-btn">清空</button></div>
-          <textarea class="note-input" placeholder="写点注释…"></textarea>
-          <div class="note-saved" aria-live="polite"></div>
+        <aside class="note-col">
+          <div class="note-card">
+            <div class="note-title">备注（Chart 11）</div>
+            <textarea id="note11" spellcheck="false" placeholder="这里写 Chart 11 的说明…"></textarea>
+          </div>
         </aside>
       </div>
     </section>
@@ -207,15 +176,16 @@
     <section id="sec10">
       <h2>Chart 10 (map)</h2>
       <p class="sub">Loaded from your GeoJSON. Drag the red circle; use mouse wheel to change radius.</p>
-      <div class="section-row">
-        <div class="chart-col">
+      <div class="chart-row">
+        <div class="vis-col">
           <svg id="chart10" viewBox="0 0 820 640" aria-label="map"></svg>
           <div class="note">Put <code>MasterPlan2019PlanningAreaBoundaryNoSea.geojson</code> and <code>11.svg</code> in the SAME folder as this HTML.</div>
         </div>
-        <aside class="note-card" data-note="chart10">
-          <div class="note-title">📝 备注（Chart 10） <button class="note-btn clear-btn">清空</button></div>
-          <textarea class="note-input" placeholder="写点注释…"></textarea>
-          <div class="note-saved" aria-live="polite"></div>
+        <aside class="note-col">
+          <div class="note-card">
+            <div class="note-title">备注（Chart 10）</div>
+            <textarea id="note10" spellcheck="false" placeholder="这里写 Chart 10 的说明…"></textarea>
+          </div>
         </aside>
       </div>
     </section>
@@ -224,48 +194,6 @@
 
   <!-- D3 once -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
-
-  <!-- 备注：本地自动保存 -->
-  <script>
-  (function initNotes(){
-    const KEY_PREFIX = 'notes_';
-    const cards = document.querySelectorAll('.note-card');
-
-    function showSavedHint(card){
-      const hint = card.querySelector('.note-saved');
-      if(!hint) return;
-      hint.textContent = '已保存';
-      hint.style.opacity = 1;
-      setTimeout(()=>hint.style.opacity = 0, 900);
-    }
-
-    cards.forEach(card=>{
-      const key = KEY_PREFIX + (card.dataset.note || '');
-      const input = card.querySelector('.note-input');
-      const clearBtn = card.querySelector('.clear-btn');
-
-      // load
-      input.value = localStorage.getItem(key) || '';
-
-      // save (debounced)
-      let t;
-      input.addEventListener('input', ()=>{
-        clearTimeout(t);
-        t = setTimeout(()=>{
-          localStorage.setItem(key, input.value);
-          showSavedHint(card);
-        }, 300);
-      });
-
-      // clear
-      clearBtn?.addEventListener('click', ()=>{
-        input.value = '';
-        localStorage.setItem(key, '');
-        showSavedHint(card);
-      });
-    });
-  })();
-  </script>
 
   <script>
   /* -------------------- Chart 4 -------------------- */
@@ -300,7 +228,8 @@
           const up = Math.max(0, Math.min(1, (yr-a)/Math.max(1, peak-a)));
           const down = Math.max(0, Math.min(1, (c-yr)/Math.max(1, c-peak)));
           const t = Math.min(up, down);
-          arr[yr - years[0]].value = Math.max(arr[yr - years[0]].value, +(height*t).toFixed(2));
+          const idx = yr - years[0];
+          arr[idx].value = Math.max(arr[idx].value, +(height*t).toFixed(2));
         }
       }
       return arr;
@@ -350,7 +279,9 @@
 
     const legend = g.append("g").attr("class","legend").attr("transform","translate(10,8)");
     const items = legend.selectAll("g.item").data(series).join("g")
-      .attr("class","item").attr("transform",(d,i)=>`translate(0,${i*18})`).style("cursor","pointer")
+      .attr("class","item")
+      .attr("transform",(d,i)=>`translate(0,${i*18})`)
+      .style("cursor","pointer")
       .on("click", function(e,d){
         d.hidden = !d.hidden;
         d3.select(this).select("rect").attr("fill-opacity", d.hidden? 0.15 : 1);
@@ -384,9 +315,7 @@
 
     svg.select(`#${clipId} rect`).transition().duration(1200).attr("width", w);
   })();
-  </script>
 
-  <script>
   /* -------------------- Chart 9 -------------------- */
   (function chart9(){
     const SVG_URL = '11.svg';
@@ -460,9 +389,7 @@
       hand.classList.add('hand-wave');
     }
   })();
-  </script>
 
-  <script>
   /* -------------------- Chart 8 -------------------- */
   (function chart8(){
     const svg = d3.select('#chart8');
@@ -533,9 +460,7 @@
       g.selectAll('.ghost').transition().duration(250).style('opacity', on ? 1 : 0);
     });
   })();
-  </script>
 
-  <script>
   /* -------------------- Chart 11 -------------------- */
   (function chart11(){
     const svg = d3.select('#chart11'),
@@ -642,9 +567,7 @@
     const badge = g.append('text').attr('x',8).attr('y',16).style('font-size','12px').style('fill','#64748b');
     d3.timer(()=>{ badge.text(`Overlap ∫ min(pdf0, pdf1) dx ≈ ${shadedIntegral().toFixed(3)}  (peaks: 0.22 / 0.25)`); }, 300);
   })();
-  </script>
 
-  <script>
   /* -------------------- Chart 10 -------------------- */
   (function chart10(){
     const svg = d3.select("#chart10"),
@@ -751,3 +674,4 @@
   </script>
 </body>
 </html>
+
