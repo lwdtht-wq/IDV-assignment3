@@ -461,158 +461,112 @@
     });
   })();
 
-  <script>
-/* -------------------- Chart 11 -------------------- */
-(function chart11(){
-  const svg = d3.select('#chart11'),
-        W = 900, H = 520,
-        M = {t:40, r:24, b:48, l:70},
-        w = W - M.l - M.r,
-        h = H - M.t - M.b;
+  /* -------------------- Chart 11 -------------------- */
+  (function chart11(){
+    const svg = d3.select('#chart11'),
+          W = 900, H = 520,
+          M = {t:40, r:24, b:48, l:70},
+          w = W - M.l - M.r,
+          h = H - M.t - M.b;
 
-  const g = svg.append('g').attr('transform',`translate(${M.l},${M.t})`);
+    const g = svg.append('g').attr('transform',`translate(${M.l},${M.t})`);
 
-  const x = d3.scaleLinear().domain([-2, 5]).range([0, w]);
-  const y = d3.scaleLinear().domain([0, 0.30]).nice().range([h, 0]);
-  const xTicks = [-2,-1,0,1,2,3,4,5];
+    const x = d3.scaleLinear().domain([-2, 5]).range([0, w]);
+    const y = d3.scaleLinear().domain([0, 0.30]).nice().range([h, 0]);
+    const xTicks = [-2,-1,0,1,2,3,4,5];
 
-  g.append('g').attr('class','grid').call(d3.axisLeft(y).tickSize(-w).ticks(6)).selectAll('text').remove();
-  g.append('g').attr('class','grid').attr('transform',`translate(0,${h})`)
-    .call(d3.axisBottom(x).tickValues(xTicks).tickSize(-h).tickFormat(()=>''))  
-    .selectAll('.tick line').attr('stroke','#e5e7eb');
+    g.append('g').attr('class','grid').call(d3.axisLeft(y).tickSize(-w).ticks(6)).selectAll('text').remove();
 
-  g.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
-    .call(d3.axisBottom(x).tickValues(xTicks).tickFormat(d3.format('d')));
-  g.append('g').attr('class','axis').call(d3.axisLeft(y).ticks(6));
+    g.append('g').attr('class','grid').attr('transform',`translate(0,${h})`)
+      .call(d3.axisBottom(x).tickValues(xTicks).tickSize(-h).tickFormat(()=>''))  
+      .selectAll('.tick line').attr('stroke','#e5e7eb');
 
-  g.append('text').attr('x',-50).attr('y',-12)
-    .attr('text-anchor','start').style('font-size','16px').text('Probability Density');
-  g.append('text').attr('x',w-6).attr('y',h+36)
-    .attr('text-anchor','end').style('font-size','16px').text('x');
+    g.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
+      .call(d3.axisBottom(x).tickValues(xTicks).tickFormat(d3.format('d')));
 
-  // 两条正态（按目标峰值缩放）
-  const mu0 = 0.15, s0 = 0.75;   // yellow
-  const mu1 = 2.00, s1 = 0.65;   // teal
-  const TARGET0 = 0.22, TARGET1 = 0.25;
+    g.append('g').attr('class','axis').call(d3.axisLeft(y).ticks(6));
 
-  const peak0 = 1/(s0*Math.sqrt(2*Math.PI));
-  const peak1 = 1/(s1*Math.sqrt(2*Math.PI));
-  const k0 = TARGET0/peak0, k1 = TARGET1/peak1;
+    g.append('text').attr('x',-50).attr('y',-12).attr('text-anchor','start').style('font-size','16px').text('Probability Density');
+    g.append('text').attr('x',w-6).attr('y',h+36).attr('text-anchor','end').style('font-size','16px').text('x');
 
-  const N = 800;
-  const xs  = d3.range(N).map(i => x.invert(i*(w/(N-1))));
-  const pdf = (xv,mu,s)=> (1/(s*Math.sqrt(2*Math.PI))) * Math.exp(-0.5*((xv-mu)/s)**2);
+    const mu0 = 0.15,  s0 = 0.75;
+    const mu1 = 2.00,  s1 = 0.65;
+    const TARGET0 = 0.22, TARGET1 = 0.25;
 
-  const y0 = xs.map(v => k0*pdf(v,mu0,s0));
-  const y1 = xs.map(v => k1*pdf(v,mu1,s1));
+    const peak0 = 1/(s0*Math.sqrt(2*Math.PI));
+    const peak1 = 1/(s1*Math.sqrt(2*Math.PI));
+    const k0 = TARGET0/peak0, k1 = TARGET1/peak1;
 
-  // 曲线（只描边不填充）
-  const line = d3.line().x(d=>x(d[0])).y(d=>y(d[1])).curve(d3.curveMonotoneX);
-  const path0 = g.append('path').attr('class','curve y0').attr('fill','none')
-    .attr('d', line(xs.map((v,i)=>[v,y0[i]]))).attr('stroke','#eab308');
-  const path1 = g.append('path').attr('class','curve y1').attr('fill','none')
-    .attr('d', line(xs.map((v,i)=>[v,y1[i]]))).attr('stroke','#0ea5a4');
+    const N = 800;
+    const xs = d3.range(N).map(i => x.invert(i*(w/(N-1))));
+    const pdf = (xv,mu,s)=> (1/(s*Math.sqrt(2*Math.PI))) * Math.exp(-0.5*((xv-mu)/s)**2);
 
-  [path0,path1].forEach(p=>{
-    const L = p.node().getTotalLength();
-    p.attr('stroke-dasharray',`${L} ${L}`).attr('stroke-dashoffset',L)
-     .transition().duration(900).ease(d3.easeCubicOut).attr('stroke-dashoffset',0);
-  });
+    const y0 = xs.map(v => k0*pdf(v,mu0,s0));
+    const y1 = xs.map(v => k1*pdf(v,mu1,s1));
 
-  // 图例
-  const legend = g.append('g').attr('class','legend').attr('transform',`translate(${w-290},16)`);
-  [{c:'#eab308',text:'p(x, y = 0) × v(x)'},{c:'#0ea5a4',text:'p(x, y = 1) × v(x)'}].forEach((it,i)=>{
-    const L = legend.append('g').attr('transform',`translate(0,${i*22})`);
-    L.append('line').attr('x1',0).attr('x2',28).attr('y1',0).attr('y2',0).attr('stroke',it.c).attr('stroke-width',3);
-    L.append('text').attr('x',36).attr('y',5).text(it.text).style('font-style','italic');
-  });
+    const line = d3.line().x(d=>x(d[0])).y(d=>y(d[1])).curve(d3.curveMonotoneX);
+    const path0 = g.append('path').attr('class','curve y0').attr('fill','none')
+      .attr('d', line(xs.map((v,i)=>[v, y0[i]]))).attr('stroke','#eab308');
+    const path1 = g.append('path').attr('class','curve y1').attr('fill','none')
+      .attr('d', line(xs.map((v,i)=>[v, y1[i]]))).attr('stroke','#0ea5a4');
 
-  // 阈值（参考图中的 0.95 与 1.31）
-  let cutL = 0.95, cutR = 1.31;
+    [path0, path1].forEach(p=>{
+      const L = p.node().getTotalLength();
+      p.attr('stroke-dasharray',`${L} ${L}`).attr('stroke-dashoffset',L)
+       .transition().duration(900).ease(d3.easeCubicOut).attr('stroke-dashoffset',0);
+    });
 
-  // 先画两块“浅灰”（曲线差值），再画“交集深灰”（min），层级与参考图一致
-  const shadeExtra0 = g.append('path').attr('class','shade-extra'); // 左边：黄 > 青
-  const shadeExtra1 = g.append('path').attr('class','shade-extra'); // 右边：青 > 黄
-  const shade       = g.append('path').attr('class','shade');       // 中间：min(y0,y1)
+    const legend = g.append('g').attr('class','legend').attr('transform',`translate(${w-290},16)`);
+    [{c:'#eab308', text:'p(x, y = 0) × v(x)'},{c:'#0ea5a4', text:'p(x, y = 1) × v(x)'}]
+      .forEach((it,i)=>{ const L = legend.append('g').attr('transform',`translate(0,${i*22})`);
+        L.append('line').attr('x1',0).attr('x2',28).attr('y1',0).attr('y2',0).attr('stroke',it.c).attr('stroke-width',3);
+        L.append('text').attr('x',36).attr('y',5).text(it.text).style('font-style','italic'); });
 
-  // 虚线 & 把手
-  const vlines = g.append('g');
-  const L = vlines.append('line').attr('class','vline').attr('y1',0).attr('y2',h);
-  const R = vlines.append('line').attr('class','vline').attr('y1',0).attr('y2',h);
-  const hL = vlines.append('circle').attr('class','handle').attr('r',4);
-  const hR = vlines.append('circle').attr('class','handle').attr('r',4);
+    let cutL = 0.95, cutR = 1.30;
+    const shade = g.append('path').attr('class','shade');
+    const vlines = g.append('g');
+    const L = vlines.append('line').attr('class','vline').attr('y1',0).attr('y2',h);
+    const R = vlines.append('line').attr('class','vline').attr('y1',0).attr('y2',h);
+    const hL = vlines.append('circle').attr('class','handle').attr('r',4);
+    const hR = vlines.append('circle').attr('class','handle').attr('r',4);
 
-  function updateShade(){
-    // 准备一份统一的数据行，便于用 defined() 选择区间与左右两块
-    const rows = xs.map((vx,i)=>({
-      x: vx,
-      low: Math.min(y0[i],y1[i]),
-      hi0: y0[i],  // yellow
-      hi1: y1[i],  // teal
-      in: (vx>=cutL && vx<=cutR)
-    }));
-
-    // 中间深灰：min(y0,y1)
-    const areaMin = d3.area()
-      .defined(d=>d.in)
-      .x(d=>x(d.x)).y0(y(0)).y1(d=>y(d.low)).curve(d3.curveMonotoneX);
-    shade.attr('d', areaMin(rows));
-
-    // 额外两块浅灰：在区间内，分别取「较高曲线」减去「较低曲线」
-    const areaExtra0 = d3.area()
-      .defined(d=>d.in && d.hi0 > d.hi1)     // 左半段：黄比青高
-      .x(d=>x(d.x)).y0(d=>y(d.low)).y1(d=>y(d.hi0)).curve(d3.curveMonotoneX);
-    const areaExtra1 = d3.area()
-      .defined(d=>d.in && d.hi1 > d.hi0)     // 右半段：青比黄高
-      .x(d=>x(d.x)).y0(d=>y(d.low)).y1(d=>y(d.hi1)).curve(d3.curveMonotoneX);
-
-    shadeExtra0.attr('d', areaExtra0(rows));
-    shadeExtra1.attr('d', areaExtra1(rows));
-
-    // 竖虚线 & 把手
-    L.attr('x1',x(cutL)).attr('x2',x(cutL));
-    R.attr('x1',x(cutR)).attr('x2',x(cutR));
-    hL.attr('cx',x(cutL)).attr('cy',h);
-    hR.attr('cx',x(cutR)).attr('cy',h);
-  }
-  updateShade();
-
-  // 仍保留拖动阈值的交互
-  hL.style('cursor','ew-resize').call(d3.drag().on('drag', ev=>{
-    cutL = x.invert(Math.max(0, Math.min(x(cutR)-8, ev.x)));
+    function updateShade(){
+      const pts = [];
+      xs.forEach((vx,i)=>{ const m = (vx>=cutL && vx<=cutR) ? Math.min(y0[i], y1[i]) : 0; pts.push([vx, m]); });
+      const area = d3.area().x(d=>x(d[0])).y0(y(0)).y1(d=>y(d[1])).curve(d3.curveMonotoneX);
+      shade.attr('d', area(pts));
+      L.attr('x1',x(cutL)).attr('x2',x(cutL)); R.attr('x1',x(cutR)).attr('x2',x(cutR));
+      hL.attr('cx',x(cutL)).attr('cy',h); hR.attr('cx',x(cutR)).attr('cy',h);
+    }
     updateShade();
-  }));
-  hR.style('cursor','ew-resize').call(d3.drag().on('drag', ev=>{
-    cutR = x.invert(Math.min(w, Math.max(x(cutL)+8, ev.x)));
-    updateShade();
-  }));
 
-  // hover 指示线 + tooltip
-  const guide = g.append('line').attr('class','guide').attr('y1',0).attr('y2',h).style('opacity',0);
-  const tip = d3.select('#tip11');
-  g.append('rect').attr('x',0).attr('y',0).attr('width',w).attr('height',h).attr('fill','transparent')
-    .on('mousemove', function(ev){
-      const [mx] = d3.pointer(ev,this);
-      const xv = x.invert(mx);
-      const yv0 = k0*pdf(xv,mu0,s0), yv1 = k1*pdf(xv,mu1,s1);
-      guide.attr('x1',mx).attr('x2',mx).style('opacity',1);
-      tip.html(`<div><b>x</b> = ${xv.toFixed(2)}</div>
-                <div style="color:#eab308">p(x,y=0) = ${yv0.toFixed(3)}</div>
-                <div style="color:#0ea5a4">p(x,y=1) = ${yv1.toFixed(3)}</div>`)
-         .style('left',(ev.clientX)+'px').style('top',(ev.clientY)+'px').style('opacity',1);
-    })
-    .on('mouseleave', ()=>{ guide.style('opacity',0); tip.style('opacity',0); });
+    hL.style('cursor','ew-resize').call(d3.drag().on('drag', ev=>{ cutL = x.invert(Math.max(0, Math.min(x(cutR)-8, ev.x))); updateShade(); }));
+    hR.style('cursor','ew-resize').call(d3.drag().on('drag', ev=>{ cutR = x.invert(Math.min(w, Math.max(x(cutL)+8, ev.x))); updateShade(); }));
 
-  // 实时显示重叠积分
-  function shadedIntegral(){
-    let S = 0; const dx = (x.invert(1)-x.invert(0));
-    xs.forEach((vx,i)=>{ if(vx>=cutL && vx<=cutR) S += Math.min(y0[i],y1[i]) * dx; });
-    return S;
-  }
-  const badge = g.append('text').attr('x',8).attr('y',16).style('font-size','12px').style('fill','#64748b');
-  d3.timer(()=>{ badge.text(`Overlap ∫ min(pdf0, pdf1) dx ≈ ${shadedIntegral().toFixed(3)}  (peaks: 0.22 / 0.25)`); }, 300);
-})();
-</script>
+    const guide = g.append('line').attr('class','guide').attr('y1',0).attr('y2',h).style('opacity',0);
+    const tip = d3.select('#tip11');
+
+    g.append('rect').attr('x',0).attr('y',0).attr('width',w).attr('height',h).attr('fill','transparent')
+      .on('mousemove', function(ev){
+        const [mx] = d3.pointer(ev,this);
+        const xv = x.invert(mx);
+        const yv0 = k0*pdf(xv,mu0,s0), yv1 = k1*pdf(xv,mu1,s1);
+        guide.attr('x1',mx).attr('x2',mx).style('opacity',1);
+        tip.html(`<div><b>x</b> = ${xv.toFixed(2)}</div>
+                  <div style="color:#eab308">p(x,y=0) = ${yv0.toFixed(3)}</div>
+                  <div style="color:#0ea5a4">p(x,y=1) = ${yv1.toFixed(3)}</div>`)
+           .style('left',(ev.clientX)+'px').style('top',(ev.clientY)+'px').style('opacity',1);
+      })
+      .on('mouseleave', ()=>{ guide.style('opacity',0); tip.style('opacity',0); });
+
+    function shadedIntegral(){
+      let S = 0; const dx = (x.invert(1)-x.invert(0));
+      xs.forEach((vx,i)=>{ if(vx>=cutL && vx<=cutR) S += Math.min(y0[i],y1[i]) * dx; });
+      return S;
+    }
+    const badge = g.append('text').attr('x',8).attr('y',16).style('font-size','12px').style('fill','#64748b');
+    d3.timer(()=>{ badge.text(`Overlap ∫ min(pdf0, pdf1) dx ≈ ${shadedIntegral().toFixed(3)}  (peaks: 0.22 / 0.25)`); }, 300);
+  })();
 
   /* -------------------- Chart 10 -------------------- */
   (function chart10(){
@@ -720,4 +674,3 @@
   </script>
 </body>
 </html>
-
